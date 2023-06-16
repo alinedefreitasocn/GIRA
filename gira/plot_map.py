@@ -16,18 +16,20 @@ def scatter(df:pd.DataFrame):
                         projection="natural earth",
                         #scope='europe'
                         )
-    fig.update_layout(lonaxis = dict(
-            showgrid = True,
-            gridwidth = 0.5,
-            range= [ -9.301437, -8.954681],
-            dtick = 5
-        ),
-        lataxis = dict(
-            showgrid = True,
-            gridwidth = 0.5,
-            range= [ 38.676979, 38.808727 ],
-            dtick = 5
-        )
-    )
+    fig.update_geos(fitbounds="locations")
+    fig.update_layout(height=300, margin={"r":0,"t":0,"l":0,"b":0})
+    # fig.update_layout(lonaxis = dict(
+    #         showgrid = True,
+    #         gridwidth = 0.5,
+    #         range= [ -9.301437, -8.954681],
+    #         dtick = 5
+    #     ),
+    #     lataxis = dict(
+    #         showgrid = True,
+    #         gridwidth = 0.5,
+    #         range= [ 38.676979, 38.808727 ],
+    #         dtick = 5
+    #     )
+    # )
 
-    fig.show()
+    return fig

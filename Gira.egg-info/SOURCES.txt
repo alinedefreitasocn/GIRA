@@ -1,4 +1,6 @@
+Makefile
 README.md
+requirements.txt
 setup.py
 Gira.egg-info/PKG-INFO
 Gira.egg-info/SOURCES.txt
@@ -11,4 +13,16 @@ gira/load_data.py
 gira/main.py
 gira/plot_map.py
 gira/preprocess.py
+gira/__pycache__/__init__.cpython-310.pyc
+gira/__pycache__/load_data.cpython-310.pyc
+gira/__pycache__/main.cpython-310.pyc
+gira/__pycache__/plot_map.cpython-310.pyc
+gira/__pycache__/preprocess.cpython-310.pyc
 notebooks/GIRA.ipynb
+notebooks/Untitled.ipynb
+notebooks/time_analysis.ipynb
+notebooks/.ipynb_checkpoints/GIRA-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/Untitled-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/time_analysis-checkpoint.ipynb
+web-gira/__init__.py
+web-gira/page.py
