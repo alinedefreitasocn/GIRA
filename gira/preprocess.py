@@ -32,15 +32,22 @@ def processing_columns(df:pd.DataFrame):
     print('Dropping the columns position and designcomercial')
     df.drop(columns=['desigcomercial', 'position'], inplace=True)
     print(f'\n{"-" * 25}\n')
+    print('Preprocess completed! ')
 
-    print('Sorting values by station ID and datetime')
-    df_sorted = df.sort_values(by=['stationID', 'entity_ts'])
+    return df
+
+def process_station(df: pd.DataFrame, station: int):
+
+    df_ = df.copy()
+    df_station = df_[df_['stationID'] == station]
+
+    print('Sorting values by datetime')
+    df_sorted = df_station.sort_values(by=['entity_ts'])
     print(f'\n{"-" * 25}\n')
 
     # one problem: The step time shoul be calculated for every station. If
-    # done for the whole df will have a huge step time at the beginning
-    # TODO how to solve it?? Append the df for every station number?
-    # or just change the time? Can change the negative values for zero.
+    # done for the whole df will have a huge step time at the
+    # beginning of every new station
     print('Calculating the time step')
     df_sorted['diff_time'] = df_sorted['entity_ts'].diff().replace({pd.NaT: pd.Timedelta("0 days")})
     df_sorted['total_seconds'] = df_sorted['diff_time'].apply(lambda x: int(x.total_seconds()))
@@ -59,9 +66,20 @@ def processing_columns(df:pd.DataFrame):
                  inplace=True)
     print(f'\n{"-" * 25}\n')
 
+    print('Resampling to 1 hour timestep')
+    df_hour = df_sorted.resample('H').agg({'numbicicletas': 'mean',
+                                           'numdocas':'mean',
+                                           'station_name': 'last',
+                                           'lat': 'last',
+                                           'lon': 'last',
+                                          'stationID': 'last',
+                                          'estado':'last',
+                                          'diff_time':'mean',
+                                          'total_seconds': 'mean'})
+    # TODO: testar!
+    df_hour['numbicicletas'] = df_hour['numbicicletas'].interpolate()
     print('Calculating the diff in the n. bike column')
-    df_sorted['bike_taken'] = df_sorted['numbicicletas'].diff().fillna(0)
+    df_hour['bike_taken'] = df_hour['numbicicletas'].diff().fillna(0)
     print(f'\n{"-" * 25}\n')
-    print('Preprocess completed! ')
 
-    return df_sorted
+    return df_hour

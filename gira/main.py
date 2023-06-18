@@ -1,10 +1,11 @@
-from gira.load_data import load
+from gira.load_data import load, load_sample
 from gira import preprocess
 from gira.plot_map import scatter
 
 def init():
     print('Loading the data')
-    df = load()
+
+    df = load_sample()
     print(f'\n{"-" * 25}\n')
 
     df_cleaned = preprocess.cleaning(df)

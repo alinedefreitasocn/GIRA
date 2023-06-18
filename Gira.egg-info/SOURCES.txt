@@ -25,4 +25,7 @@ notebooks/.ipynb_checkpoints/GIRA-checkpoint.ipynb
 notebooks/.ipynb_checkpoints/Untitled-checkpoint.ipynb
 notebooks/.ipynb_checkpoints/time_analysis-checkpoint.ipynb
 web-gira/__init__.py
-web-gira/page.py
+web-gira/legacy.py
+web-gira/main_page.py
+web-gira/__pycache__/legacy.cpython-310.pyc
+web-gira/pages/map.py
