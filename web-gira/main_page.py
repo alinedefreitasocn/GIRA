@@ -19,12 +19,12 @@ st.title('Station Analysis')
 def get_data():
     return main.init()
 
-df = get_data()
+st.session_state.df = get_data()
 
 # selecting the number of the station to check
 stationNum = st.selectbox(
     'Station number',
-    (list(df.stationID.unique()))) # int 64
+    (list(st.session_state.df.stationID.unique()))) # int 64
 
 
 if st.button('Generate'):
@@ -34,7 +34,7 @@ if st.button('Generate'):
     # check if the station was already processed
     # if yes, used the one on session_state
     if station not in st.session_state:
-        df_station = preprocess.process_station(df, stationNum)
+        df_station = preprocess.process_station(st.session_state.df, stationNum)
         st.session_state[station] = df_station
     else:
         df_station = st.session_state[station]
@@ -68,7 +68,11 @@ if st.button('Generate'):
     fig = plt.figure(figsize=(10, 4))
     st.write(f'Number of missing values: {df_station["numbicicletas"].isna().sum()} out of {len(df_station["numbicicletas"])}')
     sns.lineplot(df_station.index, df_station['numbicicletas'])
+    repair = df_station[df_station['estado'] == 'repair']
+    # st.write(repair.columns)
+
+    # sns.pointplot(data=repair,
+    #               y='numbicicletas',
+    #               linestyles=None,
+    #               label='Repair')
     st.pyplot(fig)
-
-
-# TODO: What to do with missing data
