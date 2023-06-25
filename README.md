@@ -10,4 +10,5 @@ Information about GIRA station position and the amount of bicicles per station a
 - Number of bicicles
 - Timestamp of update
 
-## 
+## EDA
+Starting with an exploratory data analysis, I realized that the time stamp is not evenly distributed and range from 20 minutes to 7 hours. I resampled the data in an hourly frequency and filled up the remain blanck spaces with an interpolation on the number of bicicles available. 

@@ -76,10 +76,28 @@ def process_station(df: pd.DataFrame, station: int):
                                           'estado':'last',
                                           'diff_time':'mean',
                                           'total_seconds': 'mean'})
-    # TODO: testar!
+    # interpolating when there's no data
     df_hour['numbicicletas'] = df_hour['numbicicletas'].interpolate()
+
     print('Calculating the diff in the n. bike column')
     df_hour['bike_taken'] = df_hour['numbicicletas'].diff().fillna(0)
     print(f'\n{"-" * 25}\n')
 
     return df_hour
+
+def process_all_station(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Get the entire dataframe and process for each station separatelly
+
+    ---
+    return: new dataframe processed by station
+    """
+    stations = df['stationID'].unique()
+    processed_stations = pd.DataFrame()
+
+    for station in stations:
+        processed_stations = pd.concat([processed_stations,
+                                        process_station(df, station)],
+                                       axis=0)
+
+    return processed_stations

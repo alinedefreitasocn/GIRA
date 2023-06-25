@@ -23,7 +23,7 @@ def load() -> pd.DataFrame:
                     parse_dates=['entity_ts'])
     return df
 
-def load_sample() -> None:
+def save_sample() -> None:
     '''
     Load the dataset using the previoous function load()
     and save a smaller version for testing
