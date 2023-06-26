@@ -3,7 +3,6 @@ import numpy as np
 
 
 def cleaning(df:pd.DataFrame):
-
     # first of all, drop duplicates
     df = df.copy()
     df.drop_duplicates(inplace=True)
@@ -12,6 +11,17 @@ def cleaning(df:pd.DataFrame):
 
 
 def processing_columns(df:pd.DataFrame):
+    """
+    This function performes the following transformation on the original
+    dataframe:
+    - Split the column desigcomercial into station name and station ID
+    - Split the position column into lat and lon
+    - Drop th etwo columns after the transformation
+
+    ---
+    return:
+        DataFrame with new columns
+    """
     # for station id
     df = df.copy()
 
@@ -36,21 +46,47 @@ def processing_columns(df:pd.DataFrame):
 
     return df
 
-def process_station(df: pd.DataFrame, station: int):
+def time_step(df):
+    """
+    Creates a column with the time step between register.
+    Won't be necessary after resamplying. Only useful during
+    EDA.
+    """
+    df_copy = df.copy
+    # one problem: The step time shoul be calculated for every station. If
+    # done for the whole df will have a huge step time at the
+    # beginning of every new station
+    print('Calculating the time step')
+    df_copy['diff_time'] = df_copy['entity_ts'].diff().replace({pd.NaT: pd.Timedelta("0 days")})
+    df_copy['total_seconds'] = df_copy['diff_time'].apply(lambda x: int(x.total_seconds()))
+    print(f'\n{"-" * 25}\n')
+
+    return df_copy
+
+def process_station(df: pd.DataFrame, station: int) -> pd.DataFrame:
+    """
+    Processing the information selecting by station:
+        - Sort by time
+        - Set datetime column as index
+        - Resample hourly
+        - Fill the gaps with interpolation
+        - Creates a column with the day of the week
+        - Calculating the difference between num. bicicles
+        from one register to the other
+
+    We split into station so the time step is correct. Otherwise it is
+    mixed between different stations
+
+    ---
+    return
+        DataFrame
+    """
 
     df_ = df.copy()
     df_station = df_[df_['stationID'] == station]
 
     print('Sorting values by datetime')
     df_sorted = df_station.sort_values(by=['entity_ts'])
-    print(f'\n{"-" * 25}\n')
-
-    # one problem: The step time shoul be calculated for every station. If
-    # done for the whole df will have a huge step time at the
-    # beginning of every new station
-    print('Calculating the time step')
-    df_sorted['diff_time'] = df_sorted['entity_ts'].diff().replace({pd.NaT: pd.Timedelta("0 days")})
-    df_sorted['total_seconds'] = df_sorted['diff_time'].apply(lambda x: int(x.total_seconds()))
     print(f'\n{"-" * 25}\n')
 
     print('Setting the time column as index')
@@ -67,6 +103,7 @@ def process_station(df: pd.DataFrame, station: int):
     print(f'\n{"-" * 25}\n')
 
     print('Resampling to 1 hour timestep')
+    # applying different aggregation function to each column
     df_hour = df_sorted.resample('H').agg({'numbicicletas': 'mean',
                                            'numdocas':'mean',
                                            'station_name': 'last',
@@ -79,6 +116,12 @@ def process_station(df: pd.DataFrame, station: int):
     # interpolating when there's no data
     df_hour['numbicicletas'] = df_hour['numbicicletas'].interpolate()
 
+    # create a column with the day of the week to be used later as a
+    # selector
+    print('Creating day of the week')
+    df_hour['day_of_week'] = df_hour.index.dt.day_name()
+    print(f'\n{"-" * 25}\n')
+
     print('Calculating the diff in the n. bike column')
     df_hour['bike_taken'] = df_hour['numbicicletas'].diff().fillna(0)
     print(f'\n{"-" * 25}\n')
@@ -87,7 +130,8 @@ def process_station(df: pd.DataFrame, station: int):
 
 def process_all_station(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Get the entire dataframe and process for each station separatelly
+    Get the entire dataframe and process for each station separatelly.
+    Uses the function process_station defined previously
 
     ---
     return: new dataframe processed by station
