@@ -8,6 +8,7 @@ Gira.egg-info/dependency_links.txt
 Gira.egg-info/not-zip-safe
 Gira.egg-info/requires.txt
 Gira.egg-info/top_level.txt
+data/gira_frame_sample.csv
 gira/__init__.py
 gira/load_data.py
 gira/main.py

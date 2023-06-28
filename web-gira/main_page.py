@@ -45,24 +45,6 @@ if st.button('Generate'):
     st.subheader(df_station['station_name'][0])
     # st.write(df_station.columns)
 
-    # setting the first value to zero as it is related to the previous station
-
-    # df_station['total_seconds'][0] = 0
-
-    # st.write("---")
-    # st.write('Metrics of Time step')
-
-    # c1, c2, c3, c4, c5 = st.columns(5)
-    # with c1:
-    #     st.write(f"Mean: {df_station['total_seconds'].mean():.1f} s")
-    # with c2:
-    #     st.write(f"Median: {df_station['total_seconds'].median():.1f} s")
-    # with c3:
-    #     st.write(f"Min step: {df_station['total_seconds'].min():.1f} s")
-    # with c4:
-    #     st.write(f"Max step: {df_station['total_seconds'].max():.1f} s")
-    # with c5:
-    #     st.write(f"STD: {df_station['total_seconds'].std():.1f} s")
 
     # ploting the distribution of the time step in second
     fig = plt.figure(figsize=(10, 4))
