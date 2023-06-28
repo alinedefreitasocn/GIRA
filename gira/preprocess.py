@@ -52,7 +52,7 @@ def time_step(df):
     Won't be necessary after resamplying. Only useful during
     EDA.
     """
-    df_copy = df.copy
+    df_copy = df.copy()
     # one problem: The step time shoul be calculated for every station. If
     # done for the whole df will have a huge step time at the
     # beginning of every new station
@@ -111,19 +111,32 @@ def process_station(df: pd.DataFrame, station: int) -> pd.DataFrame:
                                            'lon': 'last',
                                           'stationID': 'last',
                                           'estado':'last',
-                                          'diff_time':'mean',
-                                          'total_seconds': 'mean'})
+                                          #'diff_time':'mean',
+                                          #'total_seconds': 'mean'
+                                          })
     # interpolating when there's no data
-    df_hour['numbicicletas'] = df_hour['numbicicletas'].interpolate()
+    df_hour[['numbicicletas', 'numdocas']] = df_hour[['numbicicletas',
+                                                      'numdocas']].interpolate().astype(int)
+    df_hour[['station_name',
+             'lat',
+             'lon',
+             'stationID',
+             'estado']] = df_hour[['station_name',
+                                   'lat',
+                                    'lon',
+                                    'stationID',
+                                    'estado']].fillna(method='ffill')
 
+    # converting data to the right type
+    df_hour['stationID'] = df_hour['stationID'].astype(int)
     # create a column with the day of the week to be used later as a
     # selector
     print('Creating day of the week')
-    df_hour['day_of_week'] = df_hour.index.dt.day_name()
+    df_hour['day_of_week'] = df_hour.index.day_name()
     print(f'\n{"-" * 25}\n')
 
     print('Calculating the diff in the n. bike column')
-    df_hour['bike_taken'] = df_hour['numbicicletas'].diff().fillna(0)
+    df_hour['bike_taken'] = df_hour['numbicicletas'].diff().fillna(0).astype(int)
     print(f'\n{"-" * 25}\n')
 
     return df_hour
