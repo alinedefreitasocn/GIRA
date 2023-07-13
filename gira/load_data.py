@@ -1,16 +1,64 @@
 import pandas as pd
 import os
 
-def load() -> pd.DataFrame:
+def list_files():
+    """
+    Function just list the files available in the path
+    """
+    data_path = '/mnt/d/Dados/FinalProject_GIRA/GIRA/raw'
+    return data_path, os.listdir(data_path)
+
+def load(data_path, file) -> pd.DataFrame:
+    """
+    Function read the file from the path when path and file name are given
+    """
+    if 'xls' in file:
+        """
+        Name of the columns are different on this one
+        Index(['desigcomercial', 'numbicicletas', 'numbicicletas__1', 'numdocasvacias',
+            'position', 'entity_ts'],
+        dtype='object')
+
+        while csv files are
+        Index(['desigcomercial', 'numbicicletas', 'numdocas', 'position', 'entity_ts',
+        'estado'],
+            dtype='object')
+
+        So we should ignore the columns 'numbicicletas__1'
+        """
+        df = pd.read_excel(os.path.join(data_path, file),
+                    parse_dates=['entity_ts'], usecols=['desigcomercial',
+                                                        'numbicicletas',
+                                                        'numdocasvacias',
+                                                        'position',
+                                                        'entity_ts'])
+        # renaming the column to be equal to the csv file
+        df['numdocas'] = df['numbicicletas'] + df['numdocasvacias']
+        df.drop(columns='numdocasvacias')
+        # .rename(columns={'numdocasvacias':'numdocas'}, inplace=True)
+    elif 'csv' in file:
+        df = pd.read_csv(os.path.join(data_path, file),
+                        parse_dates=['entity_ts'],
+                        usecols=['desigcomercial',
+                                'numbicicletas',
+                                'numdocas',
+                                'position',
+                                'entity_ts'])
+    else:
+        print('Invalid file format')
+        df = None
+    return df
+
+def load_from_list() -> pd.DataFrame:
     '''
-    Load a dataset from a list of files
+    Load a dataset from a list of files. Uses the previous functions
+    list_files and load
 
     ---
     Return: DataFrame
 
     '''
-    data_path = '/mnt/d/Dados/FinalProject_GIRA/GIRA'
-    entries = os.listdir(data_path)
+    data_path, entries = list_files()
 
     for count, item in enumerate(entries):
         print(count, item)
@@ -19,9 +67,9 @@ def load() -> pd.DataFrame:
     print(f'Opening file {entries[file]}')
 
     # reading one of the files: 6 month of 2022
-    df = pd.read_csv(os.path.join(data_path, entries[file]),
-                    parse_dates=['entity_ts'])
+    df = load(data_path, entries[file])
     return df
+
 
 def save_sample() -> None:
     '''

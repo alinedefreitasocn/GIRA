@@ -16,7 +16,7 @@ def processing_columns(df:pd.DataFrame):
     dataframe:
     - Split the column desigcomercial into station name and station ID
     - Split the position column into lat and lon
-    - Drop th etwo columns after the transformation
+    - Drop the two columns after the transformation
 
     ---
     return:
@@ -110,22 +110,24 @@ def process_station(df: pd.DataFrame, station: int) -> pd.DataFrame:
                                            'lat': 'last',
                                            'lon': 'last',
                                           'stationID': 'last',
-                                          'estado':'last',
+                                        #   'estado':'last',
                                           #'diff_time':'mean',
                                           #'total_seconds': 'mean'
                                           })
     # interpolating when there's no data
     df_hour[['numbicicletas', 'numdocas']] = df_hour[['numbicicletas',
                                                       'numdocas']].interpolate().astype(int)
+
+    # filling the constant columns with the last value available
     df_hour[['station_name',
              'lat',
              'lon',
-             'stationID',
-             'estado']] = df_hour[['station_name',
+             'stationID' # , 'estado'
+             ]] = df_hour[['station_name',
                                    'lat',
                                     'lon',
-                                    'stationID',
-                                    'estado']].fillna(method='ffill')
+                                    'stationID' # , 'estado'
+                                    ]].fillna(method='ffill')
 
     # converting data to the right type
     df_hour['stationID'] = df_hour['stationID'].astype(int)
@@ -158,3 +160,17 @@ def process_all_station(df: pd.DataFrame) -> pd.DataFrame:
                                        axis=0)
 
     return processed_stations
+
+def grouping(df):
+    # creating the grouped df with mean of num bicicletas by station, day of the week and time of the day
+    # lets start with just station and day of the week
+    df_grouped = df.groupby(by=['stationID', 'day_of_week', df.index.hour]).agg({'numbicicletas': 'mean',
+                                                                                'station_name':'last',
+                                                                                'numdocas': 'last',
+                                                                                'lat': 'last',
+                                                                                'lon': 'last'})
+    df_grouped['numbicicletas'] = df_grouped['numbicicletas'].astype(int)
+    df_grouped.reset_index(inplace=True)
+    # df_grouped.to_csv('/home/aline/code/personal_projects/GIRA/data/grouped_station_day_hour.csv',
+    #                   index=False)
+    return df_grouped

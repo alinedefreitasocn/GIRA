@@ -20,9 +20,10 @@ gira/__pycache__/main.cpython-310.pyc
 gira/__pycache__/plot_map.cpython-310.pyc
 gira/__pycache__/preprocess.cpython-310.pyc
 notebooks/GIRA.ipynb
+notebooks/Map.ipynb
 notebooks/Untitled.ipynb
-notebooks/time_analysis.ipynb
 notebooks/.ipynb_checkpoints/GIRA-checkpoint.ipynb
+notebooks/.ipynb_checkpoints/Map-checkpoint.ipynb
 notebooks/.ipynb_checkpoints/Untitled-checkpoint.ipynb
 notebooks/.ipynb_checkpoints/time_analysis-checkpoint.ipynb
 web-gira/__init__.py
